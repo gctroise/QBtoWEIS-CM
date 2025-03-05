@@ -32,7 +32,7 @@ The installation instructions below use the environment name, "qbweis-env," but 
 1. Clone the repository and create a virtual environment install the software:
    
         conda config --add channels conda-forge
-        git clone https://github.com/rbehrensdeluna/QBtoWEIS.git
+        git clone https://github.com/gctroise/QBtoWEIS-CM.git
         cd QBtoWEIS
 
 
