@@ -29,10 +29,10 @@ On laptop and personal computers, installation with [Anaconda](https://www.anaco
 
 The installation instructions below use the environment name, "qbweis-env," but any name is acceptable. For those working behind company firewalls, you may have to change the conda authentication with `conda config --set ssl_verify no`. Proxy servers can also be set with `conda config --set proxy_servers.http http://id:pw@address:port` and `conda config --set proxy_servers.https https://id:pw@address:port`.
 
-1. Clone the repository and create a virtual environment install the software:
+1. Clone the test-develop repository and create a virtual environment install the software:
    
         conda config --add channels conda-forge
-        git clone https://github.com/gctroise/QBtoWEIS-CM.git
+        git clone -b test-develop https://github.com/gctroise/QBtoWEIS-CM.git qbweis-env
         cd QBtoWEIS-CM
 
 
