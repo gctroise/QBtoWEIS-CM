@@ -33,7 +33,7 @@ The installation instructions below use the environment name, "qbweis-env," but 
    
         conda config --add channels conda-forge
         git clone https://github.com/gctroise/QBtoWEIS-CM.git
-        cd QBtoWEIS
+        cd QBtoWEIS-CM
 
 
 2. Add in final packages and install the software
@@ -41,7 +41,7 @@ The installation instructions below use the environment name, "qbweis-env," but 
         conda install -y petsc4py mpi4py pyoptsparse     # (Mac / Linux only, sometimes Windows users may need to install mpi4py)
         pip install -e .
 
-**NOTE:** To use QBtoWEIS again after installation is complete, you will always need to activate the conda environment first with conda activate qbweis-env (or source activate qbweis-env).
+**NOTE:** To use QBtoWEIS-CM again after installation is complete, you will always need to activate the conda environment first with conda activate qbweis-env (or source activate qbweis-env).
 
 ## Download and configure QBladeCE
 
@@ -57,7 +57,7 @@ The installation instructions below use the environment name, "qbweis-env," but 
         chmod +x run_qblade.sh
         chmod +x QBladeCE_x.y.z # x.y.z should be replaced by the actual version number, e.g. 2.0.8.1 
 
-**NOTE:** QBtoWEIS requires QBladeCE/QBladeEE version 2.0.8 or newer
+**NOTE:** QBtoWEIS-CM requires QBladeCE/QBladeEE version 2.0.8 or newer
 
 ## Instructions for Running Simulations/Optimizations with QBalde
 
@@ -77,7 +77,7 @@ The installation instructions below use the environment name, "qbweis-env," but 
 ### **Default Path**
    To avoid modifying the path in every new WEIS problem you can specify your default path in the modeling_schema.yaml:
    
-        QBtoWEIS/weis/inputs/modeling_schema.yaml 
+        QBtoWEIS-CM/weis/inputs/modeling_schema.yaml 
         
    "path2qb_libs" & "path2qb_dll" are found below the "qblade_configuration" object.
 
