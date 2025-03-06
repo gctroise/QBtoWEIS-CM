@@ -90,3 +90,4 @@ Verify if correct package versions were installed
         conda list openfast # (check if openfast version equals 3.5.2 otherwise uninstall and revert)
         pip uninstall openfast
         pip install wisdem==3.5.2
+#test
