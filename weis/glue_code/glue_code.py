@@ -29,6 +29,10 @@ from wisdem.commonse.cylinder_member import get_nfull
 from weis.aeroelasticse.openmdao_qblade import QBLADELoadCases
 # from weis.gebt.sonata_wrapper import SONATA_WEIS
 
+# va gt
+from weis.myopex.my_opex import myopex
+# va gt
+
 weis_dir = os.path.realpath(os.path.join(os.path.dirname(__file__),'../../'))
 
 class WindPark(om.Group):
@@ -1320,3 +1324,20 @@ class WindPark(om.Group):
                 self.connect('tune_rosco_ivc.IPC_Kp1p',        'outputs_2_screen_weis.IPC_Kp1p')
                 self.connect('tune_rosco_ivc.IPC_Ki1p',        'outputs_2_screen_weis.IPC_Ki1p')
                 self.connect('dac_ivc.te_flap_end',            'outputs_2_screen_weis.te_flap_end')
+        
+        # va gt
+        if modeling_options["WISDEM"]["OPEX"]["flag"]:
+            self.add_subsystem("myopex_post",myopex())
+        # va gt Inputs into myopex
+            self.connect("configuration.rated_power", "myopex_post.rated_power")
+            self.connect("blade.high_level_blade_props.rotor_diameter", "myopex_post.rotor_diameter")
+            self.connect("bos.plant_turbine_spacing", "myopex_post.plant_turbine_spacing")
+            self.connect("bos.plant_row_spacing", "myopex_post.plant_row_spacing")
+            self.connect("costs.turbine_number", "myopex_post.turbine_number")
+            self.connect("bos.site_distance", "myopex_post.distance_to_shore")
+            self.connect("costs.wake_loss_factor", "myopex_post.wake_loss_factor")
+            if modeling_options['Level4']['flag']:
+                self.connect("aeroelastic_qblade.AEP", "myopex_post.turbine_aep")
+            else:
+                self.connect("rotorse.rp.AEP", "myopex_post.turbine_aep")
+        #va gt 
