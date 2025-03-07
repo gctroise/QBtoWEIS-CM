@@ -903,6 +903,13 @@ class WindPark(om.Group):
                 if modeling_options["flags"]["bos"]:
                     if modeling_options['flags']['offshore']:
                         self.connect('orbit.total_capex_kW',    'financese_post.bos_per_kW')
+                        # va gt
+                        if modeling_options["WISDEM"]["OPEX"]["flag"]:
+                            if not modeling_options["Level4"]["flag"]:
+                                self.connect("myopex.opex_cost_kW", "financese_post.opex_per_kW")
+                            else:
+                                self.connect("costs.opex_per_kW", "financese_post.opex_per_kW")
+                        # va gt
                     else:
                         self.connect('landbosse.bos_capex_kW',  'financese_post.bos_per_kW')
                 else:
@@ -914,7 +921,7 @@ class WindPark(om.Group):
 
             if not modeling_options['Level3']['from_openfast']:    
                 self.connect('costs.turbine_number',    'financese_post.turbine_number')
-                self.connect('costs.opex_per_kW',       'financese_post.opex_per_kW')
+                # self.connect('costs.opex_per_kW',       'financese_post.opex_per_kW')
                 self.connect('costs.offset_tcc_per_kW', 'financese_post.offset_tcc_per_kW')
                 self.connect('costs.wake_loss_factor',  'financese_post.wake_loss_factor')
                 self.connect('costs.fixed_charge_rate', 'financese_post.fixed_charge_rate')
