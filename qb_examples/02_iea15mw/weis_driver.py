@@ -8,8 +8,10 @@ from openmdao.utils.mpi  import MPI
 ## File management
 run_dir                 = os.path.dirname( os.path.realpath(__file__) )
 fname_wt_input          = run_dir + os.sep + "IEA-15-240-RWT_VolturnUS-S.yaml"
-fname_modeling_options  = run_dir + os.sep + 'modeling_options.yaml'
-fname_analysis_options  = run_dir + os.sep + 'analysis_options_opt.yaml'
+fname_modeling_options  = run_dir + os.sep + 'modeling_options_dlc11.yaml'
+# fname_modeling_options  = run_dir + os.sep + 'modeling_options.yaml'
+fname_analysis_options  = run_dir + os.sep + 'analysis_options_opt_lcoe.yaml'
+# fname_analysis_options  = run_dir + os.sep + 'analysis_options_opt.yaml'
 
 
 tt = time.time()
@@ -22,3 +24,4 @@ else:
 if rank == 0:
     print("Run time: %f"%(time.time()-tt))
     sys.stdout.flush()
+

@@ -4,6 +4,8 @@ General:
     qblade_configuration:
         flag: True
         # Linux
+        path2qb_libs: QBladeCE_2.0.8.6/Libraries
+        path2qb_dll: QBladeCE_2.0.8.6/libQBladeCE_2.0.8.6.so.1.0.0
         # path2qb_libs: # enter path to Libraries directory here, e.g. <.../QBladeCE_2.0.8.5/Libraries>
         # path2qb_dll: # enter path to "libQBladeCE_2.0.8.5.so.1.0.0" here, e.g. <.../QBladeCE_2.0.8.1/libQBladeCE_2.0.8.5.so.1.0.0>  
         # Windows
@@ -31,6 +33,10 @@ WISDEM:
         flag: True
     FloatingSE:
         flag: True
+    BOS:
+        flag: True
+OPEX:
+    flag: True
     
 Level4:                         # Options for WEIS fidelity level 4 = nonlinear time domain with QBlade
     flag: True
