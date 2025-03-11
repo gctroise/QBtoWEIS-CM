@@ -904,9 +904,9 @@ class WindPark(om.Group):
                     if modeling_options['flags']['offshore']:
                         self.connect('orbit.total_capex_kW',    'financese_post.bos_per_kW')
                         # va gt
-                        if modeling_options["WISDEM"]["OPEX"]["flag"]:
+                        if modeling_options["OPEX"]["flag"]:
                             if not modeling_options["Level4"]["flag"]:
-                                self.connect("myopex.opex_cost_kW", "financese_post.opex_per_kW")
+                                self.connect("myopex_post.opex_cost_kW", "financese_post.opex_per_kW")
                             else:
                                 self.connect("costs.opex_per_kW", "financese_post.opex_per_kW")
                         # va gt
@@ -1333,7 +1333,8 @@ class WindPark(om.Group):
                 self.connect('dac_ivc.te_flap_end',            'outputs_2_screen_weis.te_flap_end')
         
         # va gt
-        if modeling_options["WISDEM"]["OPEX"]["flag"]:
+        # if modeling_options["WISDEM"]["OPEX"]["flag"]:
+        if modeling_options["OPEX"]["flag"]:
             self.add_subsystem("myopex_post",myopex())
         # va gt Inputs into myopex
             self.connect("configuration.rated_power", "myopex_post.rated_power")

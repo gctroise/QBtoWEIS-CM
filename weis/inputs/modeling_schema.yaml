@@ -153,14 +153,17 @@ properties:
         type: object
         default: {}
         description: Options for running WISDEM.  No further options are included in this file.  They are populated using the modeling schema in the WISDEM project in python.
+    # va gt        
+    OPEX:
+        type: object
+        default: {}
         properties:
-            # va gt        
-            OPEX:
-                type: object
-                default: {}
-                properties:
-                    flag: *flag
-            # va gt
+            # flag: *flag
+            flag:
+                type: boolean
+                default: True
+                description: Flag to take an appropriate OPEX value into account in the financial analysis  
+    # va gt
     Level1:
         type: object
         default: {}
