@@ -163,6 +163,32 @@ properties:
                 type: boolean
                 default: True
                 description: Flag to take an appropriate OPEX value into account in the financial analysis  
+    Floris:
+        type: object
+        default: {}
+        properties:
+            # flag: *flag
+            flag:
+                type: boolean
+                default: False
+                description: Flag to take an appropriate wake loss factor into account in the estimation of AEP  
+            floris_wind_data_file:
+                type: string
+                default: ../floris/examples/mytests/wind_data_test.txt
+                description: Path to place FLoris wind data file (e.g. floris/examples/mytests/wind_data_test.txt)
+            floris_config_file:
+                type: string
+                default: ../floris/examples/mytests/emgauss_floating_IEA15MW.yaml
+                description: Path to place FLoris configuration file (e.g. floris/examples/mytests/emgauss_floating_IEA15MW.yaml)
+            override_layout: 
+                type: boolean
+                default: False
+                description: flag to override the original layout in the config file with a simple rectangular layout
+            turbine_per_row:
+                type: integer
+                default: 7
+                description: Number of turbines per row in a plant (used when a configuration file is not defined)
+
     # va gt
     Level1:
         type: object

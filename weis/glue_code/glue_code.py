@@ -31,6 +31,7 @@ from weis.aeroelasticse.openmdao_qblade import QBLADELoadCases
 
 # va gt
 from weis.myopex.my_opex import myopex
+from weis.wakelossfact.floris_wlf import wakelossfactor as wlf
 # va gt
 
 weis_dir = os.path.realpath(os.path.join(os.path.dirname(__file__),'../../'))
@@ -921,9 +922,16 @@ class WindPark(om.Group):
 
             if not modeling_options['Level3']['from_openfast']:    
                 self.connect('costs.turbine_number',    'financese_post.turbine_number')
+                # va gt
                 # self.connect('costs.opex_per_kW',       'financese_post.opex_per_kW')
+                # va gt
                 self.connect('costs.offset_tcc_per_kW', 'financese_post.offset_tcc_per_kW')
-                self.connect('costs.wake_loss_factor',  'financese_post.wake_loss_factor')
+                #va gt
+                if modeling_options["Floris"]["flag"]:
+                    self.connect('wlf.wake_loss_factor',  'financese_post.wake_loss_factor')
+                else:
+                    self.connect('costs.wake_loss_factor',  'financese_post.wake_loss_factor')
+                #va gt
                 self.connect('costs.fixed_charge_rate', 'financese_post.fixed_charge_rate')
 
             if modeling_options['DLC_driver']['n_ws_aep'] > 0:
@@ -1307,7 +1315,12 @@ class WindPark(om.Group):
                 self.connect('costs.turbine_number',    'financese_post.turbine_number')
                 self.connect('costs.opex_per_kW',       'financese_post.opex_per_kW')
                 self.connect('costs.offset_tcc_per_kW', 'financese_post.offset_tcc_per_kW')
-                self.connect('costs.wake_loss_factor',  'financese_post.wake_loss_factor')
+                #va gt
+                if modeling_options["Floris"]["flag"]:
+                    self.connect('wlf.wake_loss_factor',  'financese_post.wake_loss_factor')
+                else:
+                    self.connect('costs.wake_loss_factor',  'financese_post.wake_loss_factor')
+                #va gt
                 self.connect('costs.fixed_charge_rate', 'financese_post.fixed_charge_rate')
                 self.connect('financese_post.lcoe',      'outputs_2_screen_weis.lcoe')
 
@@ -1343,9 +1356,23 @@ class WindPark(om.Group):
             self.connect("bos.plant_row_spacing", "myopex_post.plant_row_spacing")
             self.connect("costs.turbine_number", "myopex_post.turbine_number")
             self.connect("bos.site_distance", "myopex_post.distance_to_shore")
-            self.connect("costs.wake_loss_factor", "myopex_post.wake_loss_factor")
+            if modeling_options["Floris"]["flag"]:
+                self.connect('wlf.wake_loss_factor',  'myopex_post.wake_loss_factor')
+            else:
+                self.connect("costs.wake_loss_factor", "myopex_post.wake_loss_factor")
             if modeling_options['Level4']['flag']:
                 self.connect("aeroelastic_qblade.AEP", "myopex_post.turbine_aep")
             else:
                 self.connect("rotorse.rp.AEP", "myopex_post.turbine_aep")
+        
+        if modeling_options["Floris"]["flag"]:
+            self.add_subsystem("wlf", wlf(modeling_options=modeling_options))
+
+            self.connect("blade.high_level_blade_props.rotor_diameter", "wlf.rotor_diameter")
+
+            if modeling_options["Floris"]["override_layout"]:
+                self.connect("costs.turbine_number", "wlf.turbine_number")
+                self.connect("bos.plant_turbine_spacing", "wlf.turbine_spacing")
+                self.connect("bos.plant_row_spacing", "wlf.row_spacing")
+
         #va gt 
