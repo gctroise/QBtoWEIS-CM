@@ -1375,4 +1375,14 @@ class WindPark(om.Group):
                 self.connect("bos.plant_turbine_spacing", "wlf.turbine_spacing")
                 self.connect("bos.plant_row_spacing", "wlf.row_spacing")
 
+            if modeling_options['Level4']['flag']:
+                self.connect("aeroelastic_qblade.V_out","wlf.V_out")
+                self.connect("aeroelastic_qblade.P_out","wlf.P_out")
+                self.connect("aeroelastic_qblade.Cp_out","wlf.Cp_out")
+                self.connect("aeroelastic_qblade.Ct_out","wlf.Ct_out")
+            elif modeling_options['Level3']['flag']:
+                self.connect("aeroelastic.V_out","wlf.V_out")
+                self.connect("aeroelastic.P_out","wlf.P_out")
+                self.connect("aeroelastic.Cp_out","wlf.Cp_out")
+                self.connect("aeroelastic.Ct_out","wlf.Ct_out")
         #va gt 

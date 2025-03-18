@@ -11,6 +11,7 @@ from floris import (
     FlorisModel,
     TimeSeries,
     WindRose,
+    turbine_library
 )
 from floris.utilities import wrap_360
 
@@ -19,8 +20,10 @@ import pandas as pd
 from datetime import datetime
 
 class calculationWLF:
-    def __init__(self,diam, turb_spacing, row_spacing, nturb_per_row, nturbine, wind_data_file, floris_input, override_layout):
+    def __init__(self,diam, hub_height, turb_spacing, row_spacing, nturb_per_row, nturbine, wind_data_file, floris_input, override_layout, 
+                 V_out, P_out, Cp_out, Ct_out):
         self.diam=diam
+        self.hub_height=hub_height
         self.turb_spacing=turb_spacing
         self.row_spacing=row_spacing
         self.nturb_per_row=nturb_per_row
@@ -28,6 +31,10 @@ class calculationWLF:
         self.wind_data_file = wind_data_file
         self.floris_input = floris_input
         self.override_layout=override_layout
+        self.V_out=V_out
+        self.P_out=P_out
+        self.Cp_out=Cp_out
+        self.Ct_out=Ct_out
 
         self.wlf=0.0
         
@@ -48,11 +55,35 @@ class calculationWLF:
         # plt.ylabel("Vel (m/s)")
         # wind_rose.plot()
         
+        # create turbine info dictionary
+        turbine_data_dict={
+            "wind_speed": list(self.V_out),
+            "power_coefficient": list(self.Cp_out),
+            "thrust_coefficient": list(self.Ct_out),
+        }
+        turbine_dict = turbine_library.build_cosine_loss_turbine_dict(
+            turbine_data_dict,
+            "example_turbine",
+            file_name=None,
+            generator_efficiency=1,
+            hub_height=self.hub_height,
+            cosine_loss_exponent_yaw=1.88,
+            cosine_loss_exponent_tilt=1.88,
+            rotor_diameter=self.diam,
+            TSR=8,
+            ref_air_density=1.225,
+            ref_tilt=5,
+        )
+
+        
         # create floris model 
         fmodel = FlorisModel(self.floris_input)
         fmodel.set(
-            wind_data=wind_rose
+            wind_data=wind_rose,
+            turbine_type=[turbine_dict],
+            reference_wind_height=self.hub_height
         )
+
         #%% set farm layout
         # turbine_number=10
         # nturb_per_row=7
