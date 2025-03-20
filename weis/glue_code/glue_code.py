@@ -906,7 +906,8 @@ class WindPark(om.Group):
                         self.connect('orbit.total_capex_kW',    'financese_post.bos_per_kW')
                         # va gt
                         if modeling_options["OPEX"]["flag"]:
-                            if not modeling_options["Level4"]["flag"]:
+                            # if not modeling_options["Level4"]["flag"]:
+                            if modeling_options["Level3"]["flag"]:
                                 self.connect("myopex_post.opex_cost_kW", "financese_post.opex_per_kW")
                             else:
                                 self.connect("costs.opex_per_kW", "financese_post.opex_per_kW")
@@ -1299,6 +1300,12 @@ class WindPark(om.Group):
                 if modeling_options["flags"]["bos"]:
                     if modeling_options['flags']['offshore']:
                         self.connect('orbit.total_capex_kW',    'financese_post.bos_per_kW')
+                        # va gt
+                        if modeling_options["OPEX"]["flag"]:
+                            self.connect("myopex_post.opex_cost_kW", "financese_post.opex_per_kW")
+                        else:
+                            self.connect("costs.opex_per_kW", "financese_post.opex_per_kW")
+                        # va gt
                     else:
                         self.connect('landbosse.bos_capex_kW',  'financese_post.bos_per_kW')
                 else:
@@ -1313,7 +1320,9 @@ class WindPark(om.Group):
 
             if not modeling_options['Level4']['from_qblade']:  
                 self.connect('costs.turbine_number',    'financese_post.turbine_number')
-                self.connect('costs.opex_per_kW',       'financese_post.opex_per_kW')
+                # va gt
+                # self.connect('costs.opex_per_kW',       'financese_post.opex_per_kW')                 
+                # va gt
                 self.connect('costs.offset_tcc_per_kW', 'financese_post.offset_tcc_per_kW')
                 #va gt
                 if modeling_options["Floris"]["flag"]:
