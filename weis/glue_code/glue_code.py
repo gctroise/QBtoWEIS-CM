@@ -397,6 +397,13 @@ class WindPark(om.Group):
                 
             if not modeling_options['Level3']['from_openfast']:
                 self.add_subsystem('tcons_post',     TurbineConstraints(modeling_options = modeling_options))
+                # va gt
+                if modeling_options["Floris"]["flag"]:
+                    self.add_subsystem("wlf", wlf(modeling_options=modeling_options))
+                if modeling_options["OPEX"]["flag"]:
+                    self.add_subsystem("myopex_post",myopex(wt_init=wt_init))
+
+                # va gt
                 self.add_subsystem('financese_post', PlantFinance(verbosity=modeling_options['General']['verbosity']))
             
             # Post-processing
@@ -999,6 +1006,12 @@ class WindPark(om.Group):
 
             if not modeling_options['Level4']['from_qblade']:
                 self.add_subsystem('tcons_post',     TurbineConstraints(modeling_options = modeling_options))
+                #va gt
+                if modeling_options["Floris"]["flag"]:
+                    self.add_subsystem("wlf", wlf(modeling_options=modeling_options))
+                if modeling_options["OPEX"]["flag"]:
+                    self.add_subsystem("myopex_post",myopex(wt_init=wt_init))
+                #va gt
                 self.add_subsystem('financese_post', PlantFinance(verbosity=modeling_options['General']['verbosity']))
 
             # Post-processing
@@ -1357,7 +1370,7 @@ class WindPark(om.Group):
         # va gt
         # if modeling_options["WISDEM"]["OPEX"]["flag"]:
         if modeling_options["OPEX"]["flag"]:
-            self.add_subsystem("myopex_post",myopex())
+            # self.add_subsystem("myopex_post",myopex(wt_init=wt_init))
         # va gt Inputs into myopex
             self.connect("configuration.rated_power", "myopex_post.rated_power")
             self.connect("blade.high_level_blade_props.rotor_diameter", "myopex_post.rotor_diameter")
@@ -1375,7 +1388,7 @@ class WindPark(om.Group):
                 self.connect("rotorse.rp.AEP", "myopex_post.turbine_aep")
         
         if modeling_options["Floris"]["flag"]:
-            self.add_subsystem("wlf", wlf(modeling_options=modeling_options))
+            # self.add_subsystem("wlf", wlf(modeling_options=modeling_options))
 
             self.connect("blade.high_level_blade_props.rotor_diameter", "wlf.rotor_diameter")
 

@@ -8,10 +8,12 @@ class myopex(om.ExplicitComponent):
 
     def initialize(self):
         pass
-        # self.options.declare('wt_init')
+        self.options.declare('wt_init')
         # self.options.declare('modeling_options')
     
     def setup(self):
+        wt_init = self.options['wt_init']
+
         self.add_input('rated_power', val=15000000, units="W")
         self.add_input('rotor_diameter', val=250.0, units='m')
         self.add_discrete_input('turbine_number', val=1)
@@ -27,7 +29,7 @@ class myopex(om.ExplicitComponent):
         self.add_output('capacity_factor_opex', val=0.5)
         self.add_output('power_density', val=5.0, units='MW/km**2')
         self.add_output('opex_cost', val=70.0, units='MUSD/year')
-        self.add_output('opex_cost_kW', val=122.0, units='USD/kW/year')
+        self.add_output('opex_cost_kW', val=wt_init["costs"]["opex_per_kW"], units='USD/kW/year')
 
     def compute(self, inputs, outputs, discrete_inputs, discrete_outputs):
         # wt_init = self.options['wt_init']
