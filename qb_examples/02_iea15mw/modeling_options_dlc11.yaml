@@ -21,6 +21,7 @@ General:
 WISDEM:
     RotorSE:
         flag: True
+        n_pc: 20
         n_pitch_perf_surfaces: 10
         n_tsr_perf_surfaces: 10
         spar_cap_ss: spar_cap_ss
@@ -35,16 +36,34 @@ WISDEM:
         flag: True
     BOS:
         flag: True
+
 OPEX:
     flag: True
-    
+
+Floris:
+    flag: True
+    floris_wind_data_file: ../../weis/wakelossfact/wind_data.txt #../../../floris/examples/mytests/wind_data_test.txt
+    # floris_wind_data_file: ./weis/wakelossfact/wind_data.txt #../../../floris/examples/mytests/wind_data_test.txt
+    floris_config_file: ../../weis/wakelossfact/emgauss_floating_model.yaml #../../../floris/examples/mytests/emgauss_floating_IEA15MW.yaml
+    # floris_config_file: ./weis/wakelossfact/emgauss_floating_model.yaml #../../../floris/examples/mytests/emgauss_floating_IEA15MW.yaml
+    override_layout: True
+    turbine_per_row: 6
+
+Level1:
+    flag: False
+    potential_model_override: 0
+    potential_bem_members: [main_column,column1,column2,column3,Y_pontoon_lower1,Y_pontoon_lower2,Y_pontoon_lower3]
+    min_freq_BEM: 0.25
+    min_freq: 0.1
+    max_freq: 1.0
+
 Level4:                         # Options for WEIS fidelity level 4 = nonlinear time domain with QBlade
     flag: True
     simulation:
         Simulate: True
         DLCGenerator: True
         wave_flag: True
-        TMax: 120
+        TMax: 600
         TIMESTEP: 0.05
         ISOFFSHORE: 1
         STOREFROM: 60.0 
@@ -137,10 +156,12 @@ DLC_driver:
         wave_period50: 14.2
     DLCs:
         - DLC: "1.1"
+        #   wind_speed: [6.0, 8.0, 10.0, 12.0]
+        #   wind_speed: [ 6.0, 9.0, 12.0, 15.0, 18.0, 21.0]
           wind_speed: [4.0, 6.0, 8.0, 10.0, 11.0, 12.0, 14.0, 16.0, 18.0, 20.0, 22.0, 24.0]
           n_seeds: 1
-          analysis_time: 600.
-          transient_time: 120.
+          analysis_time: 300.
+          transient_time: 30.
           turbulent_wind:
               TimeStep: 0.05
               HubHt: 150.0

@@ -1296,8 +1296,8 @@ costs:
     wake_loss_factor: 0.15
     fixed_charge_rate: 0.056
     bos_per_kW: 4053.
-    opex_per_kW: 137.
-    turbine_number: 40.
+    opex_per_kW: 142.6
+    turbine_number: 40
     labor_rate: 58.8
     painting_rate: 30.0
     blade_mass_cost_coeff: 14.6
