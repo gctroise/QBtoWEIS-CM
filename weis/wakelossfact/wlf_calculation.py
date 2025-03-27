@@ -21,7 +21,7 @@ from datetime import datetime
 
 class calculationWLF:
     def __init__(self,diam, hub_height, turb_spacing, row_spacing, nturb_per_row, nturbine, wind_data_file, floris_input, override_layout, 
-                 V_out, P_out, Cp_out, Ct_out):
+                 V_out, P_out, Cp_out, Ct_out, correct_by_tilt=False, tilt_val=None, vel_tilt=None):
         self.diam=diam
         self.hub_height=hub_height
         self.turb_spacing=turb_spacing
@@ -37,7 +37,11 @@ class calculationWLF:
         self.Ct_out=Ct_out
 
         self.wlf=0.0
-        
+
+        self.correct_by_tilt=correct_by_tilt
+        self.tilt_val=tilt_val
+        self.vel_tilt=vel_tilt
+
     def run(self):
         #%% import wind data
         mydata= pd.read_table(self.wind_data_file, skiprows=[1])
@@ -72,11 +76,19 @@ class calculationWLF:
             rotor_diameter=self.diam,
             TSR=8,
             ref_air_density=1.225,
-            ref_tilt=5,
+            ref_tilt=0,
         )
 
         
-        # create floris model 
+        # # create floris model 
+        # fmodel = FlorisModel(self.floris_input)
+        # fmodel.set(
+        #     wind_data=wind_rose,
+        #     turbine_type=[turbine_dict],
+        #     reference_wind_height=self.hub_height
+        # )
+
+        #%% create floris model 
         fmodel = FlorisModel(self.floris_input)
         fmodel.set(
             wind_data=wind_rose,
@@ -97,10 +109,24 @@ class calculationWLF:
             yy_turb=[self.row_spacing*self.diam*(i//(self.nturb_per_row)) for i in range(self.nturbine)]
             fmodel.set(layout_x=xx_turb, layout_y=yy_turb)
 
+        if self.correct_by_tilt:
+            # fmodel.core.farm.correct_cp_ct_for_tilt = np.full((1,len(fmodel.layout_x)), True)
+            # turbine_dict["correct_cp_ct_for_tilt"] = np.full((1,len(fmodel.layout_x)), True)
+            turbine_dict["correct_cp_ct_for_tilt"]=True
+            turbine_dict["floating_tilt_table"] = {}
+            turbine_dict["floating_tilt_table"]["wind_speed"]=self.vel_tilt
+            turbine_dict["floating_tilt_table"]["tilt"]=self.tilt_val
+            
+            fmodel.set(
+                wind_data=wind_rose,
+                turbine_type=[turbine_dict],
+                reference_wind_height=self.hub_height
+                )
+
         ax_layout=plot_turbine_rotors(fmodel)
         plot_turbine_labels(fmodel,ax_layout)
 
-        #%% calculate enery loss 
+        #%% calculate energy loss 
         
         # run the model without wake losses
         fmodel.run_no_wake()

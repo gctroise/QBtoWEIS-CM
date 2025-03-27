@@ -347,7 +347,41 @@ class WindPark(om.Group):
                 for var in ['diameter','mass_density','stiffness','breaking_load','cost_rate',
                             'transverse_added_mass','tangential_added_mass','transverse_drag','tangential_drag']:
                     self.connect(f'mooring.line_{var}', f'raft.line_{var}')
+            # va gt  
+            if not modeling_options['Level3']['flag'] and not modeling_options['Level4']['flag']:
+                if modeling_options["flags"]["bos"]:
+                    if modeling_options['flags']['offshore']:
+                        if modeling_options["Floris"]["flag"]:
+                            self.add_subsystem("wlf", wlf(modeling_options=modeling_options))
+                        if modeling_options["OPEX"]["flag"]:
+                            self.add_subsystem("myopex_post",myopex(wt_init=wt_init))
 
+                        if modeling_options["OPEX"]["flag"] or modeling_options["Floris"]["flag"]:
+                            self.add_subsystem('financese_post', PlantFinance(verbosity=modeling_options['General']['verbosity']))     
+                            self.add_subsystem('outputs_2_screen_weis',  Outputs_2_Screen(modeling_options = modeling_options, opt_options = opt_options))
+                            self.connect('rotorse.rp.AEP', 'financese_post.turbine_aep')
+                            self.connect('tcc.turbine_cost_kW',     'financese_post.tcc_per_kW')
+                            self.connect('orbit.total_capex_kW',    'financese_post.bos_per_kW')
+
+                            if modeling_options["Floris"]["flag"]:
+                                self.connect('wlf.wake_loss_factor',  'financese_post.wake_loss_factor')
+                            else:
+                                self.connect('costs.wake_loss_factor',  'financese_post.wake_loss_factor')
+                                
+                            if modeling_options["OPEX"]["flag"]:
+                                self.connect("myopex_post.opex_cost_kW", "financese_post.opex_per_kW")
+                            else:
+                                self.connect("costs.opex_per_kW", "financese_post.opex_per_kW")
+                            
+                            self.connect('configuration.rated_power',     'financese_post.machine_rating')
+                            self.connect('costs.turbine_number',    'financese_post.turbine_number')
+                            self.connect('costs.offset_tcc_per_kW', 'financese_post.offset_tcc_per_kW')
+                            self.connect('costs.fixed_charge_rate', 'financese_post.fixed_charge_rate')
+
+                            self.connect('rotorse.rp.AEP',     'outputs_2_screen_weis.aep')
+                            self.connect('rotorse.blade_mass',  'outputs_2_screen_weis.blade_mass')
+                    
+            # va gt
         # TMD connections to openmdao_openfast
         if modeling_options['flags']['TMDs']:
             self.add_subsystem('TMDs',  TMD_group(modeling_options = modeling_options, opt_options = opt_options))
@@ -1391,6 +1425,7 @@ class WindPark(om.Group):
             # self.add_subsystem("wlf", wlf(modeling_options=modeling_options))
 
             self.connect("blade.high_level_blade_props.rotor_diameter", "wlf.rotor_diameter")
+            self.connect("high_level_tower_props.hub_height", "wlf.hub_height")
 
             if modeling_options["Floris"]["override_layout"]:
                 self.connect("costs.turbine_number", "wlf.turbine_number")
@@ -1407,4 +1442,11 @@ class WindPark(om.Group):
                 self.connect("aeroelastic.P_out","wlf.P_out")
                 self.connect("aeroelastic.Cp_out","wlf.Cp_out")
                 self.connect("aeroelastic.Ct_out","wlf.Ct_out")
+            elif modeling_options['Level1']['flag']:
+                self.connect("rotorse.rp.powercurve.V","wlf.V_out")
+                self.connect("rotorse.rp.powercurve.P","wlf.P_out")
+                self.connect("rotorse.rp.powercurve.Cp_aero","wlf.Cp_out")
+                self.connect("rotorse.rp.powercurve.Ct_aero","wlf.Ct_out")
+
+                self.connect("raft.stats_pitch_avg", "wlf.tilt_vals")
         #va gt 

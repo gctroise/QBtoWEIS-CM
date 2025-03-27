@@ -68,16 +68,26 @@ class wakelossfactor(om.ExplicitComponent):
 
         self.add_output('wake_loss_factor', val=0.15)
 
-        n_ws = self.options['modeling_options']['DLC_driver']['n_cases']
+        if self.options['modeling_options']['Level4']['flag'] or self.options['modeling_options']['Level3']['flag']:
+            n_ws = self.options['modeling_options']['DLC_driver']['n_cases']
+        else:
+            n_ws = self.options['modeling_options']['WISDEM']['RotorSE']['n_pc']
         self.add_input('V_out',   val=np.zeros(n_ws),   units='m/s',    desc='wind speed vector from the OF simulations')
         self.add_input('P_out',   val=np.zeros(n_ws),   units='W',      desc='rotor electrical power')
         self.add_input('Cp_out',  val=np.zeros(n_ws),                   desc='rotor aero power coefficient')
         self.add_input('Ct_out',  val=np.zeros(n_ws),                   desc='rotor aero thrust coefficient')
 
+        self.add_input('tilt_vals', val=np.zeros(self.options['modeling_options']['DLC_driver']['n_cases']), units='deg',      desc='tilt values for wake loss calculation')
+        # self.add_input('vel_tilt', val=np.zeros(n_ws), units='m/s',      desc='velocity values for tilt correction in wake loss calculation')
+
         self.wind_data_file=self.options['modeling_options']['Floris']["floris_wind_data_file"]
         self.floris_input=self.options['modeling_options']['Floris']["floris_config_file"]
         self.nturbine_per_row=self.options['modeling_options']['Floris']['turbine_per_row']
         self.override_layout=self.options['modeling_options']['Floris']['override_layout']
+
+        self.add_output('Cp_out_post', val=np.zeros(n_ws),                   desc='rotor aero power coefficient')
+        self.add_output('Ct_out_post', val=np.zeros(n_ws),                   desc='rotor aero thrust coefficient')
+        self.add_output('tilt_vals_post', val=np.zeros(self.options['modeling_options']['DLC_driver']['n_cases']),                   desc='tilt values for floris pitch correction')
 
     def compute(self, inputs, outputs, discrete_inputs, discrete_outputs):
         diam=inputs['rotor_diameter'][0]
@@ -95,11 +105,23 @@ class wakelossfactor(om.ExplicitComponent):
         nturbine=discrete_inputs['turbine_number']
         # wlf_calc=wlf(diam, turb_spacing, row_spacing, self.nturbine_per_row, nturbine, self.wind_data_file, self.floris_input, self.override_layout)
         # wlf_calc=wlf(diam, turb_spacing, row_spacing, self.nturbine_per_row, nturbine, self.wind_data_file, path_floris, self.override_layout)
-        wlf_calc=wlf(diam, hub_height, turb_spacing, row_spacing, self.nturbine_per_row, nturbine, self.wind_data_file, \
+        if self.options['modeling_options']['Level1']:
+            tilts=inputs["tilt_vals"]
+            vel_tilt=self.options['modeling_options']['DLC_driver']['DLCs']['DLC'=='1.1']['wind_speed']
+            
+            wlf_calc=wlf(diam, hub_height, turb_spacing, row_spacing, self.nturbine_per_row, nturbine, self.wind_data_file, \
+                      self.floris_input, self.override_layout, V_out, P_out, Cp_out, Ct_out, 
+                      correct_by_tilt=True, tilt_val=tilts, vel_tilt=vel_tilt)
+        else:    
+            wlf_calc=wlf(diam, hub_height, turb_spacing, row_spacing, self.nturbine_per_row, nturbine, self.wind_data_file, \
                       self.floris_input, self.override_layout, V_out, P_out, Cp_out, Ct_out)
         wlf_calc.run()
 
         outputs['wake_loss_factor']=wlf_calc.wlf
+
+        outputs['Cp_out_post']=Cp_out
+        outputs['Ct_out_post']=Ct_out
+        outputs['tilt_vals_post']=tilts
 
 if __name__=='__main__':
     fname_wt_input='../../qb_examples/02_iea15mw/IEA-15-240-RWT_VolturnUS-S.yaml'

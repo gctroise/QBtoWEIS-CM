@@ -19,7 +19,7 @@ class myopex(om.ExplicitComponent):
         self.add_discrete_input('turbine_number', val=1)
         # self.add_input('plant_aep', val=1e9, units='kW*h')
         self.add_input('turbine_aep', val=50e6, units='kW*h')
-        self.add_input('wake_loss_factor', val=0.15, units='kW*h')
+        self.add_input('wake_loss_factor', val=0.15)
         # self.add_input('capacity_factor', val=0.4)
         
         self.add_input('distance_to_shore', val=100, units='km')
