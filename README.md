@@ -12,11 +12,20 @@
 
 [QBlade documentation](https://docs.qblade.org/)
 
+## FLORIS
+
+[FLORIS](https://nrel.github.io/floris/) is a controls-focused wind farm simulation software incorporating steady-state engineering wake models into a performance-focused Python framework, developed by NREL. An additional feature has been added to QBtoWEIS-CM to estimate a proper wake loss factor based on the wake interaction model implemented in FLORIS. To access this new feature it is necessary to install the FLORIS packages available on the FLORIS Github Repository, following the instruction there reported.
+
+[FLORIS GitHub repository](https://github.com/NREL/floris)
+
 ## Additional Packages
 
-QBtoWEIS integrates the following packages in addition to the stack of tools already available in WEIS:
+QBtoWEIS-CM integrates the following packages in addition to the stack of tools already available in WEIS:
 * [QBlade](https://qblade.org/) - freely available wind turbine simulation tool
 
+QBtoWEIS-CM integrates the following packages in addition to the stack of tools already available in WEIS and in QBtoWEIS:
+* [FLORIS](https://nrel.github.io/floris/) - freely available controls-focused wind farm simulation software
+ 
 ## Additional Packages (coming soon)
 
 * [SONATA](https://github.com/ptrbortolotti/SONATA) - toolbox for Multidisciplinary Rotor Blade Design Environment for Structural Optimization and Aeroelastic Analysis
