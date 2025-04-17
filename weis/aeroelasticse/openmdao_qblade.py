@@ -59,6 +59,7 @@ import weis.aeroelasticse.QBlade_wrapper as qbwrap
 import random
 import base64
 
+from scipy.special import gamma
 
 _encoded_version = 'MS4wLjA='
 __version__ = base64.b64decode(_encoded_version).decode('utf-8')
@@ -99,6 +100,12 @@ class QBLADELoadCases(ExplicitComponent):
         self.add_discrete_input('turbulence_class', val='A', desc='IEC turbulence class')
         self.add_discrete_input('turbine_class',    val='I', desc='IEC turbine class')
         self.add_input('shearExp',    val=0.0,                   desc='shear exponent')
+
+        #va gt
+        if self.options['modeling_options']['Floris']['flag']:
+            self.add_input('site_weibull_Vmean', val=0.0, desc='site average wind speed')
+            self.add_input('site_weibull_shape_factor', val=0.0, desc='site weibull shape factor')
+        #va gt
 
         if not self.options['modeling_options']['Level4']['from_qblade']:
 
@@ -1977,8 +1984,14 @@ class QBLADELoadCases(ExplicitComponent):
             U = self.qb_vt['QSim']['MEANINF']
 
         if len(U) > 1 and self.qb_vt['Turbine']['CONTROLLERTYPE'] > 0:
-            pp = PowerProduction(discrete_inputs['turbine_class'])
-            
+            #va gt
+            if not self.options['modeling_options']['Floris']['flag']:
+                pp = PowerProduction(discrete_inputs['turbine_class'])
+            else:
+                pp = PowerProduction_post(discrete_inputs['turbine_class'], inputs['site_weibull_Vmean'][0], inputs['site_weibull_shape_factor'][0])
+                print('! estimating power production using site wind charactristics !')
+            #va gt
+
             if not self.qb_vt['Turbine']['NOSTRUCTURE']:
                 pwr_curve_vars_qb   = ['Gen. Elec. Power', 'Aero. Power Coefficient', 'Thrust Coefficient', 'Rotational Speed', 'Pitch Angle Blade 1']
             else:
@@ -1987,7 +2000,10 @@ class QBLADELoadCases(ExplicitComponent):
             pwr_curv_vars_of    = ["GenPwr", "RtFldCp", "RtFldCt", "RotSpeed", "BldPitch1"]
             rename_dict = dict(zip(pwr_curve_vars_qb, pwr_curv_vars_of))
             sum_stats_for_AEP   =  sum_stats.rename(columns=rename_dict)
-            AEP, perf_data = pp.AEP(sum_stats_for_AEP, U, pwr_curv_vars_of)
+            if not self.options['modeling_options']['Floris']['flag']:
+                AEP, perf_data = pp.AEP(sum_stats_for_AEP, U, pwr_curv_vars_of)
+            else:
+                AEP, perf_data = pp.AEP_post(sum_stats_for_AEP, U, pwr_curv_vars_of)
 
             outputs['P_out'] = perf_data['GenPwr']['mean']
             outputs['Cp_out'] = perf_data['RtFldCp']['mean']
@@ -2403,3 +2419,128 @@ class QBLADELoadCases(ExplicitComponent):
         for i_ts, timeseries in enumerate(chan_time):
             output = OpenFASTOutput.from_dict(timeseries, self.QBLADE_namingOut)
             output.df.to_pickle(os.path.join(save_dir,self.QBLADE_namingOut + '_' + str(i_ts) + '.p'))
+
+## va gt
+class PowerProduction_post:
+    """Class to generate power production estimates."""
+
+    def __init__(self, turbine_class, weibull_Vmean=None, weibull_k=None, **kwargs):
+        """
+        Creates an instance of `PowerProduction`.
+
+        Parameters
+        ----------
+        turbine_class : int
+        """
+
+        self.turbine_class = turbine_class
+        self.weibull_Vmean=weibull_Vmean
+        self.weibull_k=weibull_k
+
+    def prob_WindDist_post(self, windspeed, disttype="pdf", weibull_Vmean=None, weibull_k=None):
+        """
+        Generates the probability of a windspeed given the cumulative
+        distribution or probability density function of a Weibull distribution
+        per IEC 61400, or for a given average windspeed and shape parameter
+
+        NOTE: This uses the range of wind speeds simulated over, so if the
+        simulated wind speed range is not indicative of operation range, using
+        this cdf to calculate AEP is invalid
+
+        Parameters
+        ----------
+        windspeed : float or list-like
+            wind speed(s) to calculate probability of
+        disttype : str, optional
+            type of probability, currently supports CDF or PDF
+
+        Returns
+        -------
+        p_bin : list
+            list containing probabilities per wind speed bin
+        """
+        # Define parameters
+        if not (weibull_Vmean is None or weibull_k is None):
+            Vavg = weibull_Vmean
+            k = weibull_k
+            c=Vavg/(gamma(1+1/k))
+            print(f'!! shape factor: k = {k:.3f}    mean wind speed: Vavg = {Vavg:.3f} m/s !!')
+        else:
+            if self.turbine_class in [1, "I"]:
+                Vavg = 50 * 0.2
+            elif self.turbine_class in [2, "II"]:
+                Vavg = 42.5 * 0.2
+            elif self.turbine_class in [3, "III"]:
+                Vavg = 37.5 * 0.2
+            
+            k = 2  # Weibull shape parameter
+            c = (2 * Vavg) / np.sqrt(np.pi)  # Weibull scale parameter
+
+        if disttype.lower() == "cdf":
+            # Calculate probability of wind speed based on WeibulCDF
+            wind_prob = 1 - np.exp(-(windspeed / c) ** k)
+
+        elif disttype.lower() == "pdf":
+            # Calculate probability of wind speed based on WeibulPDF
+            wind_prob = (
+                (k / c)
+                * (windspeed / c) ** (k - 1)
+                * np.exp(-(windspeed / c) ** k)
+            )
+
+        else:
+            raise ValueError(
+                f"The {disttype} probability distribution type is invalid"
+            )
+
+        return wind_prob
+
+    def AEP_post(self, stats, windspeeds, pwr_curve_vars):
+        """
+        Calculate AEP for simulation cases
+
+        Parameters:
+        ----------
+        stats : pd.DataFrame
+            DataFrame containing summary statistics of each DLC.
+        windspeeds : list-like
+            List of wind speed values corresponding to each power output in the stats input
+            for a single dataset
+
+        Returns:
+        --------
+        AEP : list
+            List of annual energy productions.
+        """
+
+        assert len(stats) == len(windspeeds)
+
+        pwr = stats.loc[:, ("GenPwr", "mean")].to_frame()
+
+        # Group and average powers by wind speeds
+        pwr["windspeeds"] = windspeeds
+        pwr = pwr.groupby("windspeeds").mean()
+
+        # Wind probability
+        unique = list(np.unique(windspeeds))
+        #va gt
+        wind_prob = self.prob_WindDist_post(unique, disttype="pdf", weibull_Vmean=self.weibull_Vmean, weibull_k=self.weibull_k)
+        #va gt
+
+        # Calculate AEP
+        AEP = np.trapz(pwr.T * wind_prob, unique) * 8760
+
+        perf_data = {"U": unique}
+        for var in pwr_curve_vars:
+            try:
+                perf_array = stats.loc[:, (var, "mean")].to_frame()
+            except KeyError:
+                print(var,"not found. . . continuing")
+                continue
+            perf_array["windspeed"] = windspeeds
+            perf_array = perf_array.groupby("windspeed").mean()
+            perf_data[var] = perf_array[var]
+
+        return AEP, perf_data
+
+#va gt
