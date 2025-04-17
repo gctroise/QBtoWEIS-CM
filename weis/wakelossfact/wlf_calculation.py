@@ -7,6 +7,10 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import numpy as np
 
+from scipy.optimize import curve_fit
+from scipy.special import gamma
+from scipy.stats import weibull_min
+
 from floris import (
     FlorisModel,
     TimeSeries,
@@ -19,9 +23,23 @@ import pandas as pd
 
 from datetime import datetime
 
+def weibull_func(U, A, k):
+    return (k / A) * (U / A) ** (k - 1) * np.exp(-((U / A) ** k))
+
+
+def estimate_weibull(U, freq):
+    # Normalize the frequency
+    freq = freq / freq.sum()
+
+    # Fit the Weibull distribution
+    popt, _ = curve_fit(weibull_func, U, freq, p0=(6.0, 2.0))
+    A_fit, k_fit = popt
+
+    return A_fit, k_fit
+
 class calculationWLF:
     def __init__(self,diam, hub_height, turb_spacing, row_spacing, nturb_per_row, nturbine, wind_data_file, floris_input, override_layout, 
-                 V_out, P_out, Cp_out, Ct_out, correct_by_tilt=False, tilt_val=None, vel_tilt=None):
+                 V_out, P_out, Cp_out, Ct_out, correct_by_tilt=False, tilt_val=None, vel_tilt=None, farm_alignment_angle=0.0):
         self.diam=diam
         self.hub_height=hub_height
         self.turb_spacing=turb_spacing
@@ -41,6 +59,7 @@ class calculationWLF:
         self.correct_by_tilt=correct_by_tilt
         self.tilt_val=tilt_val
         self.vel_tilt=vel_tilt
+        self.farm_alignment_angle=farm_alignment_angle
 
     def run(self):
         #%% import wind data
@@ -51,6 +70,12 @@ class calculationWLF:
             turbulence_intensities=0.07*np.ones(len(mydata["dir"])))
         time_series.assign_ti_using_IEC_method()
         wind_rose = time_series.to_WindRose(wd_step=22.5, ws_step=2)
+
+        # A_fit, k_fit = estimate_weibull(wind_rose.wind_speeds, wind_rose.freq_table.sum(axis=0))
+        k_fit, loc, A_fit = weibull_min.fit(time_series.wind_speeds, floc=0)
+        self.weibull_Vmean=A_fit*gamma(1+1/k_fit)
+        self.weibull_k=k_fit
+
         # # plot wind data
         # fig00= plt.figure()
         # date_format = "%d/%m/%Y %H:%M"
@@ -107,6 +132,13 @@ class calculationWLF:
         if self.override_layout:
             xx_turb=[self.turb_spacing*self.diam*(i%self.nturb_per_row) for i in range(self.nturbine)]
             yy_turb=[self.row_spacing*self.diam*(i//(self.nturb_per_row)) for i in range(self.nturbine)]
+            rotmat=np.array([[np.cos(np.deg2rad(self.farm_alignment_angle)), -np.sin(np.deg2rad(self.farm_alignment_angle))],
+                             [np.sin(np.deg2rad(self.farm_alignment_angle)),  np.cos(np.deg2rad(self.farm_alignment_angle))]])
+            for ii in range(len(xx_turb)):
+                rr=rotmat.dot(np.array([[xx_turb[ii]], [yy_turb[ii]]]))
+                xx_turb[ii]=rr[0][0]
+                yy_turb[ii]=rr[1][0]
+
             fmodel.set(layout_x=xx_turb, layout_y=yy_turb)
 
         if self.correct_by_tilt:
@@ -149,10 +181,29 @@ class calculationWLF:
         print(f"Expected farm power has shape {expected_farm_power.shape} and is {expected_farm_power}")
         print(f"Farm AEP is {farm_aep/1e9:.2f} GWh with wake losses")
         print(f"Farm AEP is {farm_aep_no_wake/1e9:.2f} GWh without wake losses")
-        print(f"Farm overall wake loss is {(farm_aep-farm_aep_no_wake)/farm_aep_no_wake:.3f}%")
+        print(f"Farm overall wake loss is {(farm_aep-farm_aep_no_wake)/farm_aep_no_wake:.3f}")
         # fig1 =plt.subplot()
         # horizontal_plane = \
         #     calculate_horizontal_plane_with_turbines(fmodel, \
         #         x_resolution=200, y_resolution=100,findex_for_viz=3)
         # visualize_cut_plane(horizontal_plane, fig1)
         # plt.show()
+        
+        plt.figure()
+        ax=plt.plot(np.linspace(0,time_series.wind_speeds.max()/60,len(time_series.wind_speeds)),time_series.wind_speeds)
+        print(time_series.wind_speeds.max())
+        print(time_series.wind_speeds.min())
+        plt.ylim((0,20))
+
+
+        plt.figure()
+        ws_freq=wind_rose.freq_table.sum(axis=0)
+        ws_freq=ws_freq/ws_freq.sum()
+        ws_vel=wind_rose.wind_speeds
+        ws_bin_width=np.diff(ws_vel).mean()
+        # pdf_weib=weibull_func(ws_vel, self.weibull_Vmean*gamma(1+1/self.weibull_k), self.weibull_k)
+        pdf_weib=weibull_min.pdf(ws_vel, self.weibull_k, 0.0, self.weibull_Vmean/gamma(1+1/self.weibull_k))
+        plt.bar(ws_vel,ws_freq)
+        plt.plot(ws_vel,pdf_weib*ws_bin_width)
+        plt.show()
+        print(f'wlf: weibull shape factor={self.weibull_k}    weibull Vmean={self.weibull_Vmean} m/s')

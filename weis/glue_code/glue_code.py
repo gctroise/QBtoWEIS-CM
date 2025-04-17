@@ -238,6 +238,16 @@ class WindPark(om.Group):
             # self.add_subsystem('sonata',          SONATA_WEIS(modeling_options = modeling_options, analysis_options = opt_options, wt_init = wt_init))
 
         if modeling_options['Level1']['flag']:
+            # va gt
+            # if not modeling_options['Level3']['flag'] and not modeling_options['Level4']['flag']: 
+            #     if modeling_options["flags"]["bos"]:
+            #         if modeling_options['flags']['offshore']:
+            #             if modeling_options["Floris"]["flag"]:
+            #                 self.add_subsystem("wlf", wlf(modeling_options=modeling_options))
+            #             if modeling_options["OPEX"]["flag"]:
+            #                 self.add_subsystem("myopex_post",myopex(wt_init=wt_init))
+            #va gt
+
             self.add_subsystem('raft', RAFT_WEIS(modeling_options = modeling_options, analysis_options=opt_options))
 
             n_span = modeling_options["WISDEM"]["RotorSE"]["n_span"]
@@ -365,6 +375,8 @@ class WindPark(om.Group):
 
                             if modeling_options["Floris"]["flag"]:
                                 self.connect('wlf.wake_loss_factor',  'financese_post.wake_loss_factor')
+                                self.connect('wlf.site_weibull_Vmean','aeroelastic_qblade.site_weibull_Vmean')
+                                self.connect('wlf.site_weibull_shape_factor','aeroelastic_qblade.site_weibull_shape_factor')
                             else:
                                 self.connect('costs.wake_loss_factor',  'financese_post.wake_loss_factor')
                                 
@@ -436,7 +448,6 @@ class WindPark(om.Group):
                     self.add_subsystem("wlf", wlf(modeling_options=modeling_options))
                 if modeling_options["OPEX"]["flag"]:
                     self.add_subsystem("myopex_post",myopex(wt_init=wt_init))
-
                 # va gt
                 self.add_subsystem('financese_post', PlantFinance(verbosity=modeling_options['General']['verbosity']))
             
@@ -1008,7 +1019,14 @@ class WindPark(om.Group):
         
         # Make relevant connections between WISDEM/WEIS and QBlade relevant components (mainly aeroelastic_qblade)
         if modeling_options['Level4']['flag']:
-            
+            # va gt
+            # if modeling_options["flags"]["bos"]:
+            #     if modeling_options['flags']['offshore']:
+            #         if modeling_options["Floris"]["flag"]:
+            #             self.add_subsystem("wlf", wlf(modeling_options=modeling_options))
+            #         if modeling_options["OPEX"]["flag"]:
+            #             self.add_subsystem("myopex_post",myopex(wt_init=wt_init))
+            #va gt
             self.add_subsystem('aeroelastic_qblade',       QBLADELoadCases(modeling_options = modeling_options, opt_options = opt_options))
             self.add_subsystem('stall_check_of',           NoStallConstraint(modeling_options = modeling_options))
 
@@ -1374,6 +1392,8 @@ class WindPark(om.Group):
                 #va gt
                 if modeling_options["Floris"]["flag"]:
                     self.connect('wlf.wake_loss_factor',  'financese_post.wake_loss_factor')
+                    self.connect('wlf.site_weibull_Vmean','aeroelastic_qblade.site_weibull_Vmean')
+                    self.connect('wlf.site_weibull_shape_factor','aeroelastic_qblade.site_weibull_shape_factor')
                 else:
                     self.connect('costs.wake_loss_factor',  'financese_post.wake_loss_factor')
                 #va gt

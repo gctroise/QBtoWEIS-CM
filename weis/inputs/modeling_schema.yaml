@@ -188,6 +188,10 @@ properties:
                 type: integer
                 default: 7
                 description: Number of turbines per row in a plant (used when a configuration file is not defined)
+            alignment_angle:
+                type: number
+                default: 0.0
+                description: alignment angle of the rectangular layout
 
     # va gt
     Level1:
