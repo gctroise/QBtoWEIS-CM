@@ -68,7 +68,7 @@ The installation instructions below use the environment name, "qbweis-env," but 
 
 **NOTE:** QBtoWEIS-CM requires QBladeCE/QBladeEE version 2.0.8 or newer
 
-## Instructions for Running Simulations/Optimizations with QBalde
+## Instructions for Running Simulations/Optimizations with QBlade
 
    Before running simulations or optimizations using QBalde within WEIS, you must configure the paths to the necessary shared library files (.dll for Windows or .so for Linux/WSL2) within the `modeling_options.yaml` file of your WEIS problem. For example: `qb_examples\00_run_test\modeling_options.yaml`.
 
