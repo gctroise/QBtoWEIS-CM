@@ -1,6 +1,10 @@
-# QBtoWEIS
+# QBtoWEIS-CM
 
-**QBtoWEIS** is an extension of the WEIS (Wind Energy with Integrated Servo-control) framework that integrates the capabilities of QBlade to expand the design and optimization process for floating offshore wind turbines. By adding computationally highly optimized methods for wake aerodynamics and structural modeling, QBtoWEIS creates an even more versatile and powerful multi-fidelity toolchain, offering greater flexibility in co-design and optimization.
+**QBtoWEIS-CM** is an extension of the QBtoWEIS. It includes a more accurate cost model where the OPEX and the wake loss factor calculation are integrated into the QBtoWEIS framework.  
+
+## QBtoWEIS
+
+[QBtoWEIS](https://github.com/rbehrensdeluna/QBtoWEIS) is a framework that integrates the capabilities of QBlade to expand the design and optimization process for floating offshore wind turbines. By adding computationally highly optimized methods for wake aerodynamics and structural modeling, QBtoWEIS creates an even more versatile and powerful multi-fidelity toolchain, offering greater flexibility in co-design and optimization.
 
 ## WEIS
 
@@ -34,14 +38,14 @@ QBtoWEIS-CM integrates the following packages in addition to the stack of tools 
 
 The installation process is almost equivalent to the one of the main branch of WEIS:
 
-On laptop and personal computers, installation with [Anaconda](https://www.anaconda.com) is the recommended approach because of the ability to create self-contained environments suitable for testing and analysis. WEIS requires [Anaconda 64-bit](https://www.anaconda.com/distribution/). However, the `conda` command has begun to show its age, and we now recommend the one-for-one replacement with the [Miniforge3 distribution](https://github.com/conda-forge/miniforge?tab=readme-ov-file#miniforge3), which is much more lightweight and more easily solves for the package dependencies. Sometimes, using `mamba` in place of `conda` with this distribution speeds up the installation process. QBtoWEIS is currently supported on Linux, Windows Subsystem for Linux (WSL2) and Windows.
+On laptop and personal computers, installation with [Anaconda](https://www.anaconda.com) is the recommended approach because of the ability to create self-contained environments suitable for testing and analysis. WEIS requires [Anaconda 64-bit](https://www.anaconda.com/distribution/). However, the `conda` command has begun to show its age, and we now recommend the one-for-one replacement with the [Miniforge3 distribution](https://github.com/conda-forge/miniforge?tab=readme-ov-file#miniforge3), which is much more lightweight and more easily solves for the package dependencies. Sometimes, using `mamba` in place of `conda` with this distribution speeds up the installation process. QBtoWEIS-CM is currently supported on Linux, Windows Subsystem for Linux (WSL2) and Windows.
 
-The installation instructions below use the environment name, "qbweis-env," but any name is acceptable. For those working behind company firewalls, you may have to change the conda authentication with `conda config --set ssl_verify no`. Proxy servers can also be set with `conda config --set proxy_servers.http http://id:pw@address:port` and `conda config --set proxy_servers.https https://id:pw@address:port`.
+The installation instructions below use the environment name, "qbweiscm-env," but any name is acceptable. For those working behind company firewalls, you may have to change the conda authentication with `conda config --set ssl_verify no`. Proxy servers can also be set with `conda config --set proxy_servers.http http://id:pw@address:port` and `conda config --set proxy_servers.https https://id:pw@address:port`.
 
 1. Clone the test-develop repository and create a virtual environment install the software:
    
         conda config --add channels conda-forge
-        git clone -b test-develop https://github.com/gctroise/QBtoWEIS-CM.git qbweis-env
+        git clone -b test-develop https://github.com/gctroise/QBtoWEIS-CM.git qbweiscm-env
         cd QBtoWEIS-CM
 
 
@@ -50,7 +54,7 @@ The installation instructions below use the environment name, "qbweis-env," but 
         conda install -y petsc4py mpi4py pyoptsparse     # (Mac / Linux only, sometimes Windows users may need to install mpi4py)
         pip install -e .
 
-**NOTE:** To use QBtoWEIS-CM again after installation is complete, you will always need to activate the conda environment first with conda activate qbweis-env (or source activate qbweis-env).
+**NOTE:** To use QBtoWEIS-CM again after installation is complete, you will always need to activate the conda environment first with conda activate qbweiscm-env (or source activate qbweis-env).
 
 ## Download and configure QBladeCE
 
@@ -70,7 +74,7 @@ The installation instructions below use the environment name, "qbweis-env," but 
 
 ## Instructions for Running Simulations/Optimizations with QBlade
 
-   Before running simulations or optimizations using QBalde within WEIS, you must configure the paths to the necessary shared library files (.dll for Windows or .so for Linux/WSL2) within the `modeling_options.yaml` file of your WEIS problem. For example: `qb_examples\00_run_test\modeling_options.yaml`.
+   Before running simulations or optimizations using QBlade within WEIS, you must configure the paths to the necessary shared library files (.dll for Windows or .so for Linux/WSL2) within the `modeling_options.yaml` file of your WEIS problem. For example: `qb_examples\00_run_test\modeling_options.yaml`.
 
 ### **Linux/WSL2**
    Specify both `path2qb_libs` and `path2qb_dll` as shown below:
