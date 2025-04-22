@@ -27,15 +27,20 @@ def weibull_func(U, A, k):
     return (k / A) * (U / A) ** (k - 1) * np.exp(-((U / A) ** k))
 
 
-def estimate_weibull(U, freq):
+def estimate_weibull(wind_data_file):
     # Normalize the frequency
-    freq = freq / freq.sum()
-
+    mydata= pd.read_table(wind_data_file, skiprows=[1])
+    time_series = TimeSeries(
+        wind_speeds=mydata["Vel"].to_numpy(), 
+        wind_directions=mydata["dir"].to_numpy(),
+        turbulence_intensities=0.07*np.ones(len(mydata["dir"])))
+    time_series.assign_ti_using_IEC_method()
+    wind_rose = time_series.to_WindRose(wd_step=22.5, ws_step=2)
     # Fit the Weibull distribution
-    popt, _ = curve_fit(weibull_func, U, freq, p0=(6.0, 2.0))
-    A_fit, k_fit = popt
+    k_fit, loc, A_fit = weibull_min.fit(time_series.wind_speeds, floc=0)
+    weibull_Vmean=A_fit*gamma(1+1/k_fit)
 
-    return A_fit, k_fit
+    return A_fit, k_fit, weibull_Vmean
 
 class calculationWLF:
     def __init__(self,diam, hub_height, turb_spacing, row_spacing, nturb_per_row, nturbine, wind_data_file, floris_input, override_layout, 

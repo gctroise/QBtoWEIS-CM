@@ -12,6 +12,11 @@ from weis.control.tmd                 import assign_TMD_values
 from weis.aeroelasticse.FileTools     import save_yaml
 from wisdem.inputs.validation         import simple_types
 
+#va gt
+from weis.wakelossfact.wlf_calculation import estimate_weibull
+# from weis.wakelossfact.floris_wlf import wakelossfactor
+#va gt
+
 fd_methods = ['SLSQP','SNOPT', 'LD_MMA']
 evolutionary_methods = ['DE', 'NSGA2']
 
@@ -28,6 +33,14 @@ def run_weis(fname_wt_input, fname_modeling_options, fname_opt_options, geometry
         analysis_override=analysis_override
         )
     wt_init, modeling_options, opt_options = wt_initial.get_input_data()
+
+    # va gt
+    if modeling_options['Floris']['flag']:
+        wind_data_file=modeling_options['Floris']['floris_wind_data_file']
+        A_fit, k_fit, weibull_Vmean = estimate_weibull(wind_data_file)
+        wt_init['environment']['weib_shape_parameter']=k_fit
+        wt_init['environment']['V_mean']=weibull_Vmean
+    #va gt
 
     # Initialize openmdao problem. If running with multiple processors in MPI, use parallel finite differencing equal to the number of cores used.
     # Otherwise, initialize the WindPark system normally. Get the rank number for parallelization. We only print output files using the root processor.

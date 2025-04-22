@@ -192,7 +192,6 @@ properties:
                 type: number
                 default: 0.0
                 description: alignment angle of the rectangular layout
-
     # va gt
     Level1:
         type: object
