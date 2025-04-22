@@ -32,6 +32,7 @@ from weis.aeroelasticse.openmdao_qblade import QBLADELoadCases
 # va gt
 from weis.myopex.my_opex import myopex
 from weis.wakelossfact.floris_wlf import wakelossfactor as wlf
+from weis.wakelossfact.wlf_calculation import estimate_weibull
 # va gt
 
 weis_dir = os.path.realpath(os.path.join(os.path.dirname(__file__),'../../'))
@@ -375,8 +376,9 @@ class WindPark(om.Group):
 
                             if modeling_options["Floris"]["flag"]:
                                 self.connect('wlf.wake_loss_factor',  'financese_post.wake_loss_factor')
-                                self.connect('wlf.site_weibull_Vmean','aeroelastic_qblade.site_weibull_Vmean')
-                                self.connect('wlf.site_weibull_shape_factor','aeroelastic_qblade.site_weibull_shape_factor')
+                                self.connect('wlf.site_weibull_Vmean','rotorse.wt_class.V_mean_overwrite')
+                                # self.connect('wlf.site_weibull_shape_factor','rotorse.rp.cdf.k')
+
                             else:
                                 self.connect('costs.wake_loss_factor',  'financese_post.wake_loss_factor')
                                 
@@ -392,7 +394,8 @@ class WindPark(om.Group):
 
                             self.connect('rotorse.rp.AEP',     'outputs_2_screen_weis.aep')
                             self.connect('rotorse.blade_mass',  'outputs_2_screen_weis.blade_mass')
-                    
+                            self.connect('financese_post.lcoe',  'outputs_2_screen_weis.lcoe')
+                            self.connect('rotorse.rs.tip_pos.tip_deflection',  'outputs_2_screen_weis.tip_deflection')
             # va gt
         # TMD connections to openmdao_openfast
         if modeling_options['flags']['TMDs']:
