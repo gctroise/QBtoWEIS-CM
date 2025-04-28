@@ -60,37 +60,48 @@ class fcr(om.ExplicitComponent):
         self.add_input('credit_spread', val=0.04, desc='Credit spread based on Italian bond spread')
         self.add_input('premium_spread', val=0.03, desc='Premium spread value defined by InnoFund')
         self.add_input('innovation_premium', val=0.03, desc='Innovation premium - reference valure from InnoFund')
-
-        # self.add_input('rated_power', val=15000000, units="W")
-        # self.add_input('rotor_diameter', val=250.0, units='m')
-        # self.add_discrete_input('turbine_number', val=1)
-        # self.add_input('plant_aep', val=1e9, units='kW*h')
-        # self.add_input('turbine_aep', val=50e6, units='kW*h')
-        # self.add_input('wake_loss_factor', val=0.15)
-        # self.add_input('capacity_factor', val=0.4)
-        # 
-        # self.add_input('distance_to_shore', val=100, units='km')
-        # self.add_input('plant_turbine_spacing', val=7)
-        # self.add_input('plant_row_spacing', val=7)
         
+        self.debt_fraction=self.options['modeling_options']['FCR']['debt_fraction']
+        self.depreciation_period=self.options['modeling_options']['FCR']['depreciation_period']
+        self.depreciation_fraction=self.options['modeling_options']['FCR']['depreciation_fraction']
+        self.equity_risk_premium=self.options['modeling_options']['FCR']['equity_risk_premium']
+        self.risk_free_rate=self.options['modeling_options']['FCR']['drisk_free_rate']
+        self.equity_beta=self.options['modeling_options']['FCR']['equity_beta']
+        self.project_duration=self.options['modeling_options']['FCR']['project_duration']
+        self.tax_rate=self.options['modeling_options']['FCR']['tax_rate']
+        self.credit_spread=self.options['modeling_options']['FCR']['credit_spread']
+        self.premium_spread=self.options['modeling_options']['FCR']['premium_spread']
+        self.innovation_premium=self.options['modeling_options']['FCR']['innovation_premium']
+
         self.add_output('wacc', val=0.07, desc='Weighted average capital cost')
         self.add_output('capital_recovery_factor', val=0.0921, desc='Capital Recovery Factor')
         self.add_output('fixed_charge_rate', val=wt_init["costs"]["fixed_charge_rate"], desc='Fixed charge rate')
 
     def compute(self, inputs, outputs, discrete_inputs, discrete_outputs):
 
-        DF = inputs['debt_fraction'][0]
-        df = discrete_inputs['depreciation_fraction'][0]
-        rfr = inputs['risk_free_rate'][0]
-        erp = inputs['equity_risk_premium'][0]
-        equity_b = inputs['equity_beta'][0]
-        cs = inputs['credit_spread'][0]
-        ps = inputs['premium_spread'][0]
-        ip = inputs['innovation_premium'][0]
-        M = inputs['depreciation_period'][0]
-        t = discrete_inputs['project_duration'][0]
-        Tr = inputs['tax_rate'][0]
-        
+        # DF = inputs['debt_fraction'][0]
+        # df = discrete_inputs['depreciation_fraction'][0]
+        # rfr = inputs['risk_free_rate'][0]
+        # erp = inputs['equity_risk_premium'][0]
+        # equity_b = inputs['equity_beta'][0]
+        # cs = inputs['credit_spread'][0]
+        # ps = inputs['premium_spread'][0]
+        # ip = inputs['innovation_premium'][0]
+        # M = inputs['depreciation_period'][0]
+        # t = discrete_inputs['project_duration'][0]
+        # Tr = inputs['tax_rate'][0]
+
+        DF = self.debt_fraction
+        df = self.depreciation_period
+        rfr = self.risk_free_rate
+        erp = self.equity_risk_premium
+        equity_b = self.equity_beta
+        cs = self.credit_spread
+        ps = self.premium_spread
+        ip = self.innovation_premium
+        M = self.depreciation_period
+        t = self.project_duration
+        Tr = self.tax_rate
         
         
         EF = 1 - DF # Equity fraction
