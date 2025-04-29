@@ -33,6 +33,10 @@ from weis.aeroelasticse.openmdao_qblade import QBLADELoadCases
 from weis.myopex.my_opex import myopex
 from weis.wakelossfact.floris_wlf import wakelossfactor as wlf
 from weis.wakelossfact.wlf_calculation import estimate_weibull
+
+#fcr
+from weis.economic.fcr_calculation import fcr
+#fcr
 # va gt
 
 weis_dir = os.path.realpath(os.path.join(os.path.dirname(__file__),'../../'))
@@ -100,7 +104,14 @@ class WindPark(om.Group):
 
         # Analysis components
         self.add_subsystem('wisdem',   wisdemPark(modeling_options = modeling_options, opt_options = opt_options), promotes=['*'])
-
+        
+        #va gt
+        #fcr
+        if modeling_options["FCR"]["flag"]:
+            self.add_subsystem('fcr',fcr(modeling_options = modeling_options, wt_init = wt_init))
+        #fcr
+        #va gt
+       
         # XFOIL
         self.add_subsystem('xf',        RunXFOIL(modeling_options = modeling_options, opt_options = opt_options)) # Recompute polars with xfoil (for flaps)
         # Connections to run xfoil for te flaps
@@ -390,8 +401,15 @@ class WindPark(om.Group):
                             self.connect('configuration.rated_power',     'financese_post.machine_rating')
                             self.connect('costs.turbine_number',    'financese_post.turbine_number')
                             self.connect('costs.offset_tcc_per_kW', 'financese_post.offset_tcc_per_kW')
-                            self.connect('costs.fixed_charge_rate', 'financese_post.fixed_charge_rate')
-
+                        # fcr    
+                            if modeling_options["FCR"]["flag"]:
+                                self.connect('costs.fixed_charge_rate', 'fcr.fixed_charge_rate')
+                                self.connect('fcr.fixed_charge_rate', 'financese_post.fixed_charge_rate')
+                                self.connect('fcr.wacc','outputs_2_screen_weis.wacc')
+                                self.connect('fcr.capital_recovery_factor'.'outputs_2_screen_weis.capital_recovery_factor')
+                            else:
+                                self.connect('costs.fixed_charge_rate', 'financese_post.fixed_charge_rate')
+                        # fcr
                             self.connect('rotorse.rp.AEP',     'outputs_2_screen_weis.aep')
                             self.connect('rotorse.blade_mass',  'outputs_2_screen_weis.blade_mass')
                             self.connect('financese_post.lcoe',  'outputs_2_screen_weis.lcoe')
@@ -987,9 +1005,17 @@ class WindPark(om.Group):
                     self.connect('wlf.wake_loss_factor',  'financese_post.wake_loss_factor')
                 else:
                     self.connect('costs.wake_loss_factor',  'financese_post.wake_loss_factor')
+    
+                # fcr
+                if modeling_options["FCR"]["flag"]:
+                    self.connect('costs.fixed_charge_rate', 'fcr.fixed_charge_rate')
+                    self.connect('fcr.fixed_charge_rate', 'financese_post.fixed_charge_rate')
+                    self.connect('fcr.wacc','outputs_2_screen_weis.wacc')
+                    self.connect('fcr.capital_recovery_factor'.'outputs_2_screen_weis.capital_recovery_factor')
+                else:
+                    self.connect('costs.fixed_charge_rate', 'financese_post.fixed_charge_rate')
+                # fcr
                 #va gt
-                self.connect('costs.fixed_charge_rate', 'financese_post.fixed_charge_rate')
-
             if modeling_options['DLC_driver']['n_ws_aep'] > 0:
                 self.connect('aeroelastic.AEP',     'outputs_2_screen_weis.aep')
 
@@ -1399,8 +1425,16 @@ class WindPark(om.Group):
                     self.connect('wlf.site_weibull_shape_factor','aeroelastic_qblade.site_weibull_shape_factor')
                 else:
                     self.connect('costs.wake_loss_factor',  'financese_post.wake_loss_factor')
+                #fcr
+                if modeling_options["FCR"]["flag"]:
+                    self.connect('costs.fixed_charge_rate', 'fcr.fixed_charge_rate')
+                    self.connect('fcr.fixed_charge_rate', 'financese_post.fixed_charge_rate')
+                    self.connect('fcr.wacc','outputs_2_screen_weis.wacc')
+                    self.connect('fcr.capital_recovery_factor'.'outputs_2_screen_weis.capital_recovery_factor')
+                else:
+                    self.connect('costs.fixed_charge_rate', 'financese_post.fixed_charge_rate')
+                #fcr
                 #va gt
-                self.connect('costs.fixed_charge_rate', 'financese_post.fixed_charge_rate')
                 self.connect('financese_post.lcoe',      'outputs_2_screen_weis.lcoe')
 
                 self.connect('rotorse.blade_mass',  'outputs_2_screen_weis.blade_mass')
