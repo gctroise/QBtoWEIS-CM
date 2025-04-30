@@ -94,7 +94,15 @@ The installation instructions below use the environment name, "qbweiscm-env," bu
         
    "path2qb_libs" & "path2qb_dll" are found below the "qblade_configuration" object.
 
+## **Some corrections** 
+    It is recommended to bring some changes according to the following instructions:
 
+        1. The roll, pitch and yaw variables were defined in radians in RAFT, but for the purposes and functionalities of QBtoWEIS-CM, they should be defined in deg. In 'raft/omdao_raft.py', you should replace line 297 with: 
+            
+            myunit = 'deg'
+
+        2. QBtoWEIS-CM requires wisdem 3.18.1. In this version there is an error in the LCOE calculation of Plant Finance SE: the Turbine Capital Cost (TCC) is included twice, resulting in an overestimation of the LCOE. The error comes from ORBIT, where the output "total_capex" already includes the TCC. You should correct the 'wisdem/orbit/api/wisdem.py' according to the instructions in [WISDEM #602 commit](https://github.com/WISDEM/WISDEM/commit/9c33aacddca7c0a5813e69dfba13337dbb2c6b3f).
+        
 ## Troubleshoot.
 If you are having trouble creating the virtual environment try allocating more RAM to the WSL2 (e.g. https://learn.microsoft.com/en-us/answers/questions/1296124/how-to-increase-memory-and-cpu-limits-for-wsl2-win)
 
