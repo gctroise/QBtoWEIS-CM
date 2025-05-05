@@ -65,7 +65,7 @@ class fcr(om.ExplicitComponent):
         self.depreciation_period=self.options['modeling_options']['FCR']['depreciation_period']
         self.depreciation_fraction=self.options['modeling_options']['FCR']['depreciation_fraction']
         self.equity_risk_premium=self.options['modeling_options']['FCR']['equity_risk_premium']
-        self.risk_free_rate=self.options['modeling_options']['FCR']['drisk_free_rate']
+        self.risk_free_rate=self.options['modeling_options']['FCR']['risk_free_rate']
         self.equity_beta=self.options['modeling_options']['FCR']['equity_beta']
         self.project_duration=self.options['modeling_options']['FCR']['project_duration']
         self.tax_rate=self.options['modeling_options']['FCR']['tax_rate']
