@@ -40,6 +40,20 @@ WISDEM:
 OPEX:
     flag: True
 
+FCR:
+    flag: True
+    # debt_fraction: 0.7
+    # depreciation_period: 25
+    # depreciation_fraction: 0.02
+    # equity_risk_premium: 0.0619
+    # risk_free_rate: 0.0226
+    # equity_beta: 0.83
+    # project_duration: 25
+    # tax_rate: 0.278
+    # credit_spread: 0.04
+    # premium_spread: 0.03
+    # innovation_spread: 0.03
+
 Floris:
     flag: True
     floris_wind_data_file: ../../weis/wakelossfact/wind_data.txt #../../../floris/examples/mytests/wind_data_test.txt
@@ -50,15 +64,17 @@ Floris:
     turbine_per_row: 6
 
 Level1:
-    flag: False
+    flag: True
     potential_model_override: 0
     potential_bem_members: [main_column,column1,column2,column3,Y_pontoon_lower1,Y_pontoon_lower2,Y_pontoon_lower3]
     min_freq_BEM: 0.25
     min_freq: 0.1
     max_freq: 1.0
+    save_designs: True
+    plot_designs: True
 
 Level4:                         # Options for WEIS fidelity level 4 = nonlinear time domain with QBlade
-    flag: True
+    flag: False
     simulation:
         Simulate: True
         DLCGenerator: True
