@@ -406,7 +406,7 @@ class WindPark(om.Group):
                                 self.connect('costs.fixed_charge_rate', 'fcr.fixed_charge_rate')
                                 self.connect('fcr.fixed_charge_rate', 'financese_post.fixed_charge_rate')
                                 self.connect('fcr.wacc','outputs_2_screen_weis.wacc')
-                                self.connect('fcr.capital_recovery_factor'.'outputs_2_screen_weis.capital_recovery_factor')
+                                self.connect('fcr.capital_recovery_factor','outputs_2_screen_weis.capital_recovery_factor')
                             else:
                                 self.connect('costs.fixed_charge_rate', 'financese_post.fixed_charge_rate')
                         # fcr
@@ -1011,7 +1011,7 @@ class WindPark(om.Group):
                     self.connect('costs.fixed_charge_rate', 'fcr.fixed_charge_rate')
                     self.connect('fcr.fixed_charge_rate', 'financese_post.fixed_charge_rate')
                     self.connect('fcr.wacc','outputs_2_screen_weis.wacc')
-                    self.connect('fcr.capital_recovery_factor'.'outputs_2_screen_weis.capital_recovery_factor')
+                    self.connect('fcr.capital_recovery_factor','outputs_2_screen_weis.capital_recovery_factor')
                 else:
                     self.connect('costs.fixed_charge_rate', 'financese_post.fixed_charge_rate')
                 # fcr
@@ -1430,7 +1430,7 @@ class WindPark(om.Group):
                     self.connect('costs.fixed_charge_rate', 'fcr.fixed_charge_rate')
                     self.connect('fcr.fixed_charge_rate', 'financese_post.fixed_charge_rate')
                     self.connect('fcr.wacc','outputs_2_screen_weis.wacc')
-                    self.connect('fcr.capital_recovery_factor'.'outputs_2_screen_weis.capital_recovery_factor')
+                    self.connect('fcr.capital_recovery_factor','outputs_2_screen_weis.capital_recovery_factor')
                 else:
                     self.connect('costs.fixed_charge_rate', 'financese_post.fixed_charge_rate')
                 #fcr
