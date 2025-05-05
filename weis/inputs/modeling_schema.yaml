@@ -177,7 +177,7 @@ properties:
                 default: 0.7
                 description: The debt ratio can be calculated by dividing total debt by total assets. A debt ratio of less than 1.0 indicates that a company has more assets than debt.
             depreciation_period:
-                type: int
+                type: integer
                 default: 25
                 description: The number of years over which an asset's value is gradually decreased due to wear and tear, obsolescence, or other factors, for accounting and tax purposes.
             depreciation_fraction:
@@ -197,7 +197,7 @@ properties:
                 default: 0.83
                 description: The volatility of returns for a stock, taking into account the impact of the company's leverage from its capital structure.
             project_duration:
-                type: int
+                type: integer
                 default: 25
                 description: The total amount of time it takes to finish a project.
             tax_rate:
