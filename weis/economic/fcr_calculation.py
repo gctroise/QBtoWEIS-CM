@@ -92,7 +92,7 @@ class fcr(om.ExplicitComponent):
         # Tr = inputs['tax_rate'][0]
 
         DF = self.debt_fraction
-        df = self.depreciation_period
+        df = self.depreciation_fraction
         rfr = self.risk_free_rate
         erp = self.equity_risk_premium
         equity_b = self.equity_beta

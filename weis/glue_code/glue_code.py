@@ -403,8 +403,9 @@ class WindPark(om.Group):
                             self.connect('costs.offset_tcc_per_kW', 'financese_post.offset_tcc_per_kW')
                         # fcr    
                             if modeling_options["FCR"]["flag"]:
-                                self.connect('costs.fixed_charge_rate', 'fcr.fixed_charge_rate')
+                                # self.connect('costs.fixed_charge_rate', 'fcr.fixed_charge_rate')
                                 self.connect('fcr.fixed_charge_rate', 'financese_post.fixed_charge_rate')
+                                self.connect('fcr.fixed_charge_rate', 'outputs_2_screen_weis.fixed_charge_rate')
                                 self.connect('fcr.wacc','outputs_2_screen_weis.wacc')
                                 self.connect('fcr.capital_recovery_factor','outputs_2_screen_weis.capital_recovery_factor')
                             else:
@@ -1008,8 +1009,9 @@ class WindPark(om.Group):
     
                 # fcr
                 if modeling_options["FCR"]["flag"]:
-                    self.connect('costs.fixed_charge_rate', 'fcr.fixed_charge_rate')
+                    # self.connect('costs.fixed_charge_rate', 'fcr.fixed_charge_rate')
                     self.connect('fcr.fixed_charge_rate', 'financese_post.fixed_charge_rate')
+                    self.connect('fcr.fixed_charge_rate', 'outputs_2_screen_weis.fixed_charge_rate')
                     self.connect('fcr.wacc','outputs_2_screen_weis.wacc')
                     self.connect('fcr.capital_recovery_factor','outputs_2_screen_weis.capital_recovery_factor')
                 else:
@@ -1427,8 +1429,9 @@ class WindPark(om.Group):
                     self.connect('costs.wake_loss_factor',  'financese_post.wake_loss_factor')
                 #fcr
                 if modeling_options["FCR"]["flag"]:
-                    self.connect('costs.fixed_charge_rate', 'fcr.fixed_charge_rate')
+                    # self.connect('costs.fixed_charge_rate', 'fcr.fixed_charge_rate')
                     self.connect('fcr.fixed_charge_rate', 'financese_post.fixed_charge_rate')
+                    self.connect('fcr.fixed_charge_rate', 'outputs_2_screen_weis.fixed_charge_rate')
                     self.connect('fcr.wacc','outputs_2_screen_weis.wacc')
                     self.connect('fcr.capital_recovery_factor','outputs_2_screen_weis.capital_recovery_factor')
                 else:
