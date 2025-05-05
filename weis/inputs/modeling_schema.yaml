@@ -196,10 +196,10 @@ properties:
                 type: number
                 default: 0.83
                 description: The volatility of returns for a stock, taking into account the impact of the company's leverage from its capital structure.
-            project_duration:
-                type: integer
-                default: 25
-                description: The total amount of time it takes to finish a project.
+            # project_duration:
+                # type: integer
+                # default: 25
+                # description: The total amount of time it takes to finish a project.
             tax_rate:
                 type: number
                 default: 0.278
