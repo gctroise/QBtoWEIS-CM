@@ -55,7 +55,7 @@ class fcr(om.ExplicitComponent):
         self.add_input('equity_risk_premium', val=0.0619, desc='Equity risk premium (ERP)- Average values in Europe (InnoFund)')    # ERP
         self.add_input('risk_free_rate', val=0.0226, desc='Risk free rate (RFR)- Average values in Europe (InnoFund)')              # RFR
         self.add_input('equity_beta', val=0.83, desc='Coefficient for ROE calculation - value for Renewable Energy (InnoFund)')
-        self.add_discrete_input('project_duration', val=25, desc='Project duration')
+        self.add_input('project_duration', val=25.0, desc='Project duration')
         self.add_input('tax_rate', val=0.278, desc='Corporate tax rate (Tr)')                                                       # Tr
         self.add_input('credit_spread', val=0.04, desc='Credit spread based on Italian bond spread')
         self.add_input('premium_spread', val=0.03, desc='Premium spread value defined by InnoFund')
@@ -67,7 +67,7 @@ class fcr(om.ExplicitComponent):
         self.equity_risk_premium=self.options['modeling_options']['FCR']['equity_risk_premium']
         self.risk_free_rate=self.options['modeling_options']['FCR']['risk_free_rate']
         self.equity_beta=self.options['modeling_options']['FCR']['equity_beta']
-        self.project_duration=self.options['modeling_options']['FCR']['project_duration']
+        # self.project_duration=self.options['modeling_options']['FCR']['project_duration']
         self.tax_rate=self.options['modeling_options']['FCR']['tax_rate']
         self.credit_spread=self.options['modeling_options']['FCR']['credit_spread']
         self.premium_spread=self.options['modeling_options']['FCR']['premium_spread']
@@ -88,7 +88,7 @@ class fcr(om.ExplicitComponent):
         # ps = inputs['premium_spread'][0]
         # ip = inputs['innovation_premium'][0]
         # M = inputs['depreciation_period'][0]
-        # t = discrete_inputs['project_duration'][0]
+        t = inputs['project_duration'][0]
         # Tr = inputs['tax_rate'][0]
 
         DF = self.debt_fraction
@@ -100,7 +100,7 @@ class fcr(om.ExplicitComponent):
         ps = self.premium_spread
         ip = self.innovation_premium
         M = self.depreciation_period
-        t = self.project_duration
+        # t = self.project_duration
         Tr = self.tax_rate
         
         

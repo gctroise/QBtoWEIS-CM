@@ -404,6 +404,7 @@ class WindPark(om.Group):
                         # fcr    
                             if modeling_options["FCR"]["flag"]:
                                 # self.connect('costs.fixed_charge_rate', 'fcr.fixed_charge_rate')
+                                self.connect('configuration.lifetime','fcr.project_duration')
                                 self.connect('fcr.fixed_charge_rate', 'financese_post.fixed_charge_rate')
                                 self.connect('fcr.fixed_charge_rate', 'outputs_2_screen_weis.fixed_charge_rate')
                                 self.connect('fcr.wacc','outputs_2_screen_weis.wacc')
@@ -1010,6 +1011,7 @@ class WindPark(om.Group):
                 # fcr
                 if modeling_options["FCR"]["flag"]:
                     # self.connect('costs.fixed_charge_rate', 'fcr.fixed_charge_rate')
+                    self.connect('configuration.lifetime','fcr.project_duration')
                     self.connect('fcr.fixed_charge_rate', 'financese_post.fixed_charge_rate')
                     self.connect('fcr.fixed_charge_rate', 'outputs_2_screen_weis.fixed_charge_rate')
                     self.connect('fcr.wacc','outputs_2_screen_weis.wacc')
@@ -1430,6 +1432,7 @@ class WindPark(om.Group):
                 #fcr
                 if modeling_options["FCR"]["flag"]:
                     # self.connect('costs.fixed_charge_rate', 'fcr.fixed_charge_rate')
+                    self.connect('configuration.lifetime','fcr.project_duration')
                     self.connect('fcr.fixed_charge_rate', 'financese_post.fixed_charge_rate')
                     self.connect('fcr.fixed_charge_rate', 'outputs_2_screen_weis.fixed_charge_rate')
                     self.connect('fcr.wacc','outputs_2_screen_weis.wacc')
