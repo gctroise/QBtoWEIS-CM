@@ -52,7 +52,7 @@ FCR:
     # tax_rate: 0.278
     # credit_spread: 0.04
     # premium_spread: 0.03
-    # innovation_spread: 0.03
+    # innovation_premium: 0.03
 
 Floris:
     flag: True

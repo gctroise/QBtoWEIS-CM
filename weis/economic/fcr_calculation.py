@@ -59,7 +59,7 @@ class fcr(om.ExplicitComponent):
         self.add_input('tax_rate', val=0.278, desc='Corporate tax rate (Tr)')                                                       # Tr
         self.add_input('credit_spread', val=0.04, desc='Credit spread based on Italian bond spread')
         self.add_input('premium_spread', val=0.03, desc='Premium spread value defined by InnoFund')
-        self.add_input('innovation_premium', val=0.03, desc='Innovation premium - reference valure from InnoFund')
+        self.add_input('innovation_premium', val=0.03, desc='Innovation premium - reference value from InnoFund')
         
         self.debt_fraction=self.options['modeling_options']['FCR']['debt_fraction']
         self.depreciation_period=self.options['modeling_options']['FCR']['depreciation_period']

@@ -212,7 +212,7 @@ properties:
                 type: number
                 default: 0.03
                 description: A strategy involving both buying and selling options with different strike prices, resulting in a net premium payment from the trader.
-            innovation_spread:
+            innovation_premium:
                 type: number
                 default: 0.03
                 description: The added value a company receives from being recognized as an innovative leader, exceeding the value of its current business.
