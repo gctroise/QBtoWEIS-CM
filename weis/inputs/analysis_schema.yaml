@@ -337,6 +337,52 @@ properties:
                                         lower_bound: *bound
                                         upper_bound: *bound
                                         initial: *initial
+            #va gt
+            layout:
+                type: object
+                description: Design variables associated with layout
+                default: {}
+                properties:
+                    flag: *flag
+                    x_layout:
+                        type: array
+                        description: A set of x coordinates for the wind turbine location
+                        default: []
+                        items:
+                            type: object
+                            properties:
+                                flag: &flag
+                                    type: boolean
+                                    default: False
+                                    description: Activates as a design variable
+                                lower_bound:
+                                    type: number
+                                    unit: m
+                                    description: Design variable lower bound
+                                upper_bound:
+                                    type: number
+                                    unit: m
+                                    description: Design variable upper bound
+                    y_layout:
+                        type: object
+                        description: A set of y coordinates for the wind turbine location
+                        default: []
+                        items:
+                            type: object
+                            properties:
+                                flag: &flag
+                                    type: boolean
+                                    default: False
+                                    description: Activates as a design variable
+                                lower_bound:
+                                    type: number
+                                    unit: m
+                                    description: Design variable lower bound
+                                upper_bound:
+                                    type: number
+                                    unit: m
+                                    description: Design variable upper bound
+            #va gt
     constraints:
         # GB: These all need gammas or safety factors
         type: object
