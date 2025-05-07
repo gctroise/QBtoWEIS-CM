@@ -361,9 +361,22 @@ properties:
                             default: 7.0
                             description: Spacing along y-direction upper bound
                     farm_alignment_angle:
-                        type: number
-                        unit: rad # check this information
-                        description: Alignment angle of the farm 
+                        type: object
+                        default: {}
+                        lower_bound:
+                            type: number
+                            minimum: -180.0
+                            maximum: 180.0
+                            default: 0.0
+                            unit: deg
+                            description: Alignment angle of the farm lower bound
+                        upper_bound:
+                            type: number
+                            minimum: -180.0
+                            maximum: 180.0
+                            default: 0.0
+                            unit: deg # check this information
+                            description: Alignment angle of the farm upper bound
             #va gt
     constraints:
         # GB: These all need gammas or safety factors
