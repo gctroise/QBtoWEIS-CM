@@ -344,44 +344,26 @@ properties:
                 default: {}
                 properties:
                     flag: *flag
-                    x_layout:
-                        type: array
-                        description: A set of x coordinates for the wind turbine location
-                        default: []
-                        items:
-                            type: object
-                            properties:
-                                flag: &flag
-                                    type: boolean
-                                    default: False
-                                    description: Activates as a design variable
-                                lower_bound:
-                                    type: number
-                                    unit: m
-                                    description: Design variable lower bound
-                                upper_bound:
-                                    type: number
-                                    unit: m
-                                    description: Design variable upper bound
-                    y_layout:
+                    x_spacing:
                         type: object
-                        description: A set of y coordinates for the wind turbine location
-                        default: []
-                        items:
-                            type: object
-                            properties:
-                                flag: &flag
-                                    type: boolean
-                                    default: False
-                                    description: Activates as a design variable
-                                lower_bound:
-                                    type: number
-                                    unit: m
-                                    description: Design variable lower bound
-                                upper_bound:
-                                    type: number
-                                    unit: m
-                                    description: Design variable upper bound
+                        default: {}
+                        upper_bound:
+                            type: number
+                            maximum: 10.0
+                            default: 5.0
+                            description: Spacing along x-direction upper bound
+                    y_spacing:
+                        type: object
+                        default: {}
+                        upper_bound:
+                            type: number
+                            maximum: 10.0
+                            default: 7.0
+                            description: Spacing along y-direction upper bound
+                    farm_alignment_angle:
+                        type: number
+                        unit: rad # check this information
+                        description: Alignment angle of the farm 
             #va gt
     constraints:
         # GB: These all need gammas or safety factors
